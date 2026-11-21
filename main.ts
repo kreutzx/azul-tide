@@ -19,7 +19,20 @@ import { fileURLToPath } from 'node:url';
 import { buildDossier } from './vendor/makefun-game.ts';
 
 const GAME_TITLE = 'AZUL TIDE';
+// Systems build (second pass, game/src/): police.js runs the wanted system —
+// pursuit cars, roadblocks at three stars, a helicopter at four, line-of-sight
+// evasion and busts; combat.js adds mouse-aim fists/pistol/SMG/shotgun with
+// tracers, reloads and return fire; missions.js runs Carmen Reyes' ten-mission
+// story chain (deliver, escort, race, tail, heist, escape, showdown) plus
+// repeatable taxi, courier, race and vigilante side jobs; progression.js owns
+// respect ranks, district standing, garage upgrades, shops, buyable safehouse
+// properties, the weapon wheel, the three-station radio and localStorage
+// saves; audio.js synthesizes engine, siren, gunfire and radio with WebAudio;
+// hud.js draws the minimap, stars, bars, banners and dialogue; shots-stage.js
+// stages the four screenshots deterministically from ?shot=.
+const SYSTEMS_BUILD = 'police + combat + missions + progression + audio + hud + staging';
 console.log(`${GAME_TITLE}: packaging the Port Azul game folder for the judge.`);
+console.log(`${GAME_TITLE}: systems — ${SYSTEMS_BUILD}.`);
 
 const here = fileURLToPath(new URL('.', import.meta.url));
 const out = process.env.MAKEFUN_OUTPUT_DIR ?? '/output';

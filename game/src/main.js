@@ -40,6 +40,13 @@ import { createPlayer, updatePlayer } from './player.js';
 import { collideCars, maintainTraffic, spawnParkedCars, updateTrafficCar } from './vehicles.js';
 import { makePed, maintainPedestrians, spawnPedestrians } from './pedestrians.js';
 import { renderFrame } from './render.js';
+import { policeSystem } from './police.js';
+import { combatSystem } from './combat.js';
+import { missionsSystem } from './missions.js';
+import { progressionSystem } from './progression.js';
+import { audioSystem } from './audio.js';
+import { hudSystem } from './hud.js';
+import { stagingSystem } from './shots-stage.js';
 
 export const STEP = 1 / 60;
 const MAX_FRAME = 0.25;
@@ -277,6 +284,17 @@ function boot() {
   });
   window.__AZUL = state;
   window.__AZUL_REGISTER = registerSystem;
+  // Systems build, in run order: police heat and pursuit, mouse-aim combat,
+  // Carmen's mission chain and side jobs, progression (ranks, garages, shops,
+  // properties, radio, saves, weapon wheel), synthesized audio, the HUD, and
+  // finally the screenshot staging hook (a no-op without ?shot=).
+  registerSystem('police', policeSystem);
+  registerSystem('combat', combatSystem);
+  registerSystem('missions', missionsSystem);
+  registerSystem('progression', progressionSystem);
+  registerSystem('audio', audioSystem);
+  registerSystem('hud', hudSystem);
+  registerSystem('staging', stagingSystem);
   if (statusEl) statusEl.textContent = 'AZUL TIDE. Press Enter to play.';
   requestAnimationFrame(frame);
 }
