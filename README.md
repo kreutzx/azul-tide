@@ -10,7 +10,7 @@ This project was built for the [gta6-01 bounty on make.fun](https://make.fun/bou
 
 ## The City and the Story
 
-Port Azul is split into 7 distinct districts, each with its own look, traffic density, and attitude toward you. District standing matters: run a neighbourhood ragged and it remembers; keep it sweet and doors open more easily. The main storyline runs through 10 story missions that carry Dario from errand-running for Carmen Reyes into a direct collision with Victor Sombra's operation, with respect ranks tracking how far your reputation has climbed along the way.
+Port Azul is split into 7 distinct districts, each with its own look, traffic density, and attitude toward you. District standing matters: run a neighbourhood ragged and it remembers; keep it sweet and doors open more easily. The main storyline runs through 14 story missions that carry Dario from errand-running for Carmen Reyes into a direct collision with Victor Sombra's operation, with respect ranks tracking how far your reputation has climbed along the way.
 
 Between story beats, the city stays busy. Four repeatable side jobs — taxi fares, courier runs, street races, and vigilante work — keep cash flowing and give you reasons to learn every shortcut in town.
 
@@ -21,7 +21,7 @@ Between story beats, the city stays busy. Four repeatable side jobs — taxi far
 - **Stealable cars** — any vehicle you can reach is a vehicle you can take, and every ride handles as part of the chase
 - **Police pursuits with escalation** — a wanted system that grows teeth as your stars climb: roadblocks appear at 3+ stars, and a helicopter joins the hunt at 4+ stars
 - **Pursuit states** — chases move through PURSUIT, EVADING, and EVADED, so breaking line of sight is a real skill, not a cutscene
-- **10 story missions** following Dario Luna, Carmen Reyes, and Victor Sombra, plus **4 repeatable side jobs**: taxi, courier, street races, and vigilante
+- **14 story missions** following Dario Luna, Carmen Reyes, and Victor Sombra — deliveries, escorts, races, tails, a timed neon relay, a three-drop cash hunt, a witness run and a convoy takedown — plus **4 repeatable side jobs**: taxi, courier, street races, and vigilante, and **12 hidden cash packages** stashed across the city (teal dots on the minimap)
 - **Combat with a weapon wheel** — mouse-aimed shooting, reloading, and quick weapon selection mid-fight
 - **Respect ranks and district standing** — a two-layer reputation system that tracks both your overall name and your standing block by block
 - **Garage upgrades** — spend earnings on making your rides faster and tougher

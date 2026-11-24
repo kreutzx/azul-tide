@@ -109,6 +109,24 @@ function stageEmpire(state) {
   state.vehicles.parked.push(car);
 }
 
+function stageNeon(state) {
+  // The new "Neon Relay" timed delivery (story mission 10): Dario in a
+  // muscle car with the stock aboard, the clock on the HUD objective line,
+  // a hidden package glowing on the corner ahead.
+  const car = makeCar('muscle', 1750, 1420, 0.35, state.rng);
+  car.color = '#9d0208';
+  car.speed = 160;
+  putPlayerInCar(state, car);
+  state.money = 4950;
+  state.data.respect = 760;
+  state.data.storyIndex = 9;
+  if (state.data.startStoryMission) state.data.startStoryMission(9);
+  if (state.data.dialogueQueue) {
+    state.data.dialogue = { speaker: 'Carmen Reyes', text: 'A neon dealer pays triple if his stock lands before the club opens. Clock is running, Dario.' };
+    state.data.dialogueT = 30;
+  }
+}
+
 function update(state) {
   if (staged || !state.shot) return;
   staged = true;
@@ -117,6 +135,7 @@ function update(state) {
     else if (state.shot === 'chase') stageChase(state);
     else if (state.shot === 'mission') stageMission(state);
     else if (state.shot === 'empire') stageEmpire(state);
+    else if (state.shot === 'neon') stageNeon(state);
   } catch (err) {
     // Staging must never break boot; the plain scene still renders.
     void err;

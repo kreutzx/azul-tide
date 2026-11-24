@@ -22,9 +22,12 @@ const GAME_TITLE = 'AZUL TIDE';
 // Systems build (second pass, game/src/): police.js runs the wanted system —
 // pursuit cars, roadblocks at three stars, a helicopter at four, line-of-sight
 // evasion and busts; combat.js adds mouse-aim fists/pistol/SMG/shotgun with
-// tracers, reloads and return fire; missions.js runs Carmen Reyes' ten-mission
-// story chain (deliver, escort, race, tail, heist, escape, showdown) plus
-// repeatable taxi, courier, race and vigilante side jobs; progression.js owns
+// tracers, reloads and return fire; missions.js runs Carmen Reyes' fourteen-mission
+// story chain (deliver, escort, race, tail, heist, escape, timed relay,
+// collect-and-return drops, witness escort, convoy takedown, showdown) plus
+// repeatable taxi, courier, race and vigilante side jobs and twelve hidden
+// cash packages stashed across the city; vehicles include a muscle car and
+// pedestrians trade bark lines; progression.js owns
 // respect ranks, district standing, garage upgrades, shops, buyable safehouse
 // properties, the weapon wheel, the three-station radio and localStorage
 // saves; audio.js synthesizes engine, siren, gunfire and radio with WebAudio;

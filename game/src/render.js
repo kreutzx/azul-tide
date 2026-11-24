@@ -287,6 +287,18 @@ export function drawPed(ctx, ped) {
   ctx.beginPath();
   ctx.arc(ped.x, ped.y + bob * 0.3, 4.6, 0, Math.PI * 2);
   ctx.fill();
+  // Bark line: a small speech bubble while the timer runs.
+  if (ped.bark && ped.barkT > 0) {
+    ctx.font = '11px system-ui, sans-serif';
+    ctx.textAlign = 'center';
+    const tw = ctx.measureText(ped.bark).width + 12;
+    ctx.fillStyle = 'rgba(255,255,255,0.88)';
+    ctx.beginPath();
+    ctx.roundRect(ped.x - tw / 2, ped.y - 34, tw, 16, 5);
+    ctx.fill();
+    ctx.fillStyle = '#17323e';
+    ctx.fillText(ped.bark, ped.x, ped.y - 22);
+  }
 }
 
 export function drawPlayer(ctx, state) {

@@ -1,7 +1,9 @@
 // AZUL TIDE — missions.js
-// The mission engine and Carmen Reyes' ten-job story chain against the Sombra
-// syndicate, plus repeatable side work (taxi fares, courier runs, street
-// races, vigilante hits) offered at standing markers around Port Azul.
+// The mission engine and Carmen Reyes' fourteen-job story chain against the
+// Sombra syndicate, plus repeatable side work (taxi fares, courier runs,
+// street races, vigilante hits) offered at standing markers around Port Azul,
+// and twelve hidden Sombra packages stashed across the city that pay cash
+// when Dario walks or drives over them.
 //
 // Objective types: goto, deliver, chase-target, escort, race-checkpoints,
 // tail, combat-clear, escape. The engine runs one objective at a time, keeps
@@ -130,6 +132,53 @@ export const STORY_MISSIONS = [
     onStart(state) { raiseWanted(state, 4, 'mission'); },
   },
   {
+    id: 'neon-relay', title: 'Neon Relay', payout: 1900, respect: 120,
+    start: MARKET, timeLimit: 150,
+    dialogStart: [['Carmen Reyes', 'A neon dealer pays triple if his stock lands before the club opens. Clock is running, Dario.'], ['Dario Luna', 'Then I will not be stopping for red lights.']],
+    dialogEnd: [['Carmen Reyes', 'Beat the doors opening. The club crowd owes us now.']],
+    objectives: [
+      { type: 'goto', x: 1520, y: 1400, label: 'Grab the neon stock at Mercado Central', radius: 55 },
+      { type: 'deliver', x: MARINA.x, y: MARINA.y, label: 'Deliver to Marina Alta before the club opens', radius: 60, needCar: true },
+    ],
+  },
+  {
+    id: 'three-drops', title: 'Three Drops', payout: 2100, respect: 125,
+    start: MARKET,
+    dialogStart: [['Carmen Reyes', 'Sombra hid three cash drops around the city before we squeezed him. Collect them all, bring them home.'], ['Dario Luna', 'A treasure hunt. With better parking.']],
+    dialogEnd: [['Carmen Reyes', 'Every last bill. His war chest is our seed money now.']],
+    objectives: [
+      { type: 'goto', x: LIGHTHOUSE.x, y: 320, label: 'Collect drop one at Faro Point', radius: 55 },
+      { type: 'goto', x: 420, y: 1820, label: 'Collect drop two in the Flats', radius: 55 },
+      { type: 'goto', x: DOCKS.x, y: DOCKS.y, label: 'Collect drop three at the Old Harbor docks', radius: 55 },
+      { type: 'deliver', x: GARAGE_CENTRAL.x, y: GARAGE_CENTRAL.y, label: 'Bring the drops to Taller Luna Garage', radius: 60, needCar: true },
+    ],
+  },
+  {
+    id: 'witness-run', title: 'Witness Run', payout: 2300, respect: 135,
+    start: MARKET,
+    dialogStart: [['Carmen Reyes', 'A dock clerk saw everything at the warehouse. Get her to the Flats safehouse alive — Sombra is already hunting.'], ['Dario Luna', 'She rides with me. Nobody touches her.']],
+    dialogEnd: [['Carmen Reyes', 'She will talk. Sombra just lost his last alibi.']],
+    objectives: [
+      { type: 'escort', x: 360, y: 1400, label: 'Escort the witness to the Flats Safehouse', radius: 65, needCar: true },
+      { type: 'combat-clear', x: 360, y: 1400, label: 'Drive off the Sombra hit squad', radius: 95, thugs: 3 },
+    ],
+    onStart(state) {
+      spawnChaser(state, 1900, 1000);
+      spawnChaser(state, 1100, 1650);
+    },
+  },
+  {
+    id: 'convoy-takedown', title: 'Convoy Takedown', payout: 2600, respect: 150,
+    start: MARKET,
+    dialogStart: [['Carmen Reyes', 'Sombra runs one last armoured convoy car through Port Azul. Box it in, stop it, take what is inside.'], ['Dario Luna', 'One car. One me. Bad odds — for him.']],
+    dialogEnd: [['Carmen Reyes', 'The convoy is ours. Only Faro Point is left.']],
+    objectives: [
+      { type: 'chase-target', x: WAREHOUSE.x, y: WAREHOUSE.y, label: 'Run down the Sombra convoy car', radius: 80 },
+      { type: 'deliver', x: GARAGE_HARBOR.x, y: GARAGE_HARBOR.y, label: 'Bring the haul to Harbor Chop & Repair', radius: 65, needCar: true },
+    ],
+    onStart(state) { spawnMissionCar(state, 'muscle', 2300, 1100, 0, 'chase-target'); },
+  },
+  {
     id: 'faro-showdown', title: 'Faro Showdown', payout: 4000, respect: 220,
     start: MARKET,
     dialogStart: [['Victor Sombra', 'Faro Point, Luna. Bring your little empire. I will bring the tide.'], ['Dario Luna', 'This city is done paying you, Victor.']],
@@ -149,6 +198,18 @@ const SIDE_MARKERS = [
   { kind: 'vigilante', name: 'Vigilante Hits', x: WAREHOUSE.x, y: WAREHOUSE.y, color: '#ee6c4d' },
 ];
 
+// Hidden Sombra packages: twelve stashes hidden near landmarks. Walking or
+// driving over one pays $150; finding all twelve pays a $1,000 bonus. They
+// render as glowing teal crates in the world and as teal dots on the minimap
+// (hud.js reads state.data.packages).
+export const PACKAGE_SPOTS = [
+  { x: 3300, y: 240 }, { x: 420, y: 380 }, { x: 2560, y: 860 }, { x: 940, y: 860 },
+  { x: 2620, y: 1480 }, { x: 1460, y: 1340 }, { x: 360, y: 1460 }, { x: 1980, y: 380 },
+  { x: 2500, y: 1880 }, { x: 700, y: 2060 }, { x: 3100, y: 1200 }, { x: 1200, y: 620 },
+];
+export const PACKAGE_PAY = 150;
+export const PACKAGE_BONUS = 1000;
+
 function ensureMissions(state) {
   if (!state.data.missionsInit) {
     state.data.missionsInit = true;
@@ -165,6 +226,33 @@ function ensureMissions(state) {
   }
   if (!state.data.missionCars) state.data.missionCars = [];
   if (!state.data.dialogueQueue) state.data.dialogueQueue = [];
+  if (!state.data.packages) {
+    state.data.packages = PACKAGE_SPOTS.map((s) => ({ x: s.x, y: s.y, taken: false }));
+    state.data.packagesFound = 0;
+  }
+}
+
+function updatePackages(state) {
+  const pkgs = state.data.packages;
+  if (!pkgs) return;
+  const p = state.player;
+  for (const pkg of pkgs) {
+    if (pkg.taken) continue;
+    const d = Math.hypot(p.x - pkg.x, p.y - pkg.y);
+    if (d < 36) {
+      pkg.taken = true;
+      state.data.packagesFound += 1;
+      state.money += PACKAGE_PAY;
+      if (state.data.audioQueue) state.data.audioQueue.push('package');
+      if (state.data.packagesFound >= pkgs.length) {
+        state.money += PACKAGE_BONUS;
+        say(state, [['Carmen Reyes', 'Every hidden package in Port Azul. That is the whole stash, Dario — plus a $' + PACKAGE_BONUS + ' bonus from me.']]);
+      } else {
+        say(state, [['Dario Luna', 'Hidden package ' + state.data.packagesFound + '/' + pkgs.length + '. +$' + PACKAGE_PAY + '.']]);
+      }
+      state.data.requestAutosave = true;
+    }
+  }
 }
 
 function say(state, lines) {
@@ -221,7 +309,7 @@ export function startStoryMission(state, index) {
     index,
     def,
     objIndex: 0,
-    timer: 0,
+    timer: def.timeLimit || 0,
     objTimer: 0,
     pointIndex: 0,
     thugsAlive: 0,
@@ -356,7 +444,7 @@ function completeMission(state) {
     if (m.index === 3 && state.data.weapons) state.data.weapons.unlocked.smg = true;
     if (m.index === 6 && state.data.weapons) state.data.weapons.unlocked.shotgun = true;
     state.data.storyIndex = Math.max(state.data.storyIndex || 0, m.index + 1);
-    if (m.index === 9) say(state, [['Dario Luna', 'Port Azul is free. Time to build something of my own.']]);
+    if (m.index === 13) say(state, [['Dario Luna', 'Port Azul is free. Time to build something of my own.']]);
   } else {
     say(state, [['Dispatch', 'Job done. $' + payout + ' wired. More work whenever you want it.']]);
     state.data.sideCooldown = 4;
@@ -517,6 +605,7 @@ function update(state, dt) {
   }
 
   updateMissionCars(state, dt);
+  updatePackages(state);
 
   const p = state.player;
   const m = state.data.mission;
@@ -543,7 +632,10 @@ function update(state, dt) {
       }
     }
     state.data.missionMarker = next ? { x: MARKET.x, y: MARKET.y, label: next.title, kind: 'story' } : null;
-    state.data.objectiveText = next ? 'See Carmen Reyes at Portside Market' : 'Port Azul is yours. Side jobs still pay.';
+    const pkgNote = state.data.packagesFound < state.data.packages.length
+      ? ' · Hidden packages: ' + state.data.packagesFound + '/' + state.data.packages.length + ' (teal dots)'
+      : ' · All hidden packages found';
+    state.data.objectiveText = (next ? 'See Carmen Reyes at Portside Market' : 'Port Azul is yours. Side jobs still pay.') + pkgNote;
     return;
   }
 
@@ -623,6 +715,27 @@ function render(ctx, state, w, h) {
     ctx.font = 'bold 15px system-ui, sans-serif';
     ctx.textAlign = 'center';
     ctx.fillText(marker.kind === 'story' ? '!' : '◆', marker.x, marker.y - 44);
+  }
+
+  // Hidden packages: glowing teal crates with a soft pulse.
+  if (state.mode === 'playing') {
+    for (const pkg of state.data.packages || []) {
+      if (pkg.taken) continue;
+      const pulse = 1 + Math.sin(state.time * 3.4 + pkg.x * 0.01) * 0.18;
+      ctx.fillStyle = 'rgba(45,226,196,0.22)';
+      ctx.beginPath();
+      ctx.arc(pkg.x, pkg.y, 20 * pulse, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = '#2de2c4';
+      ctx.fillRect(pkg.x - 8, pkg.y - 8, 16, 16);
+      ctx.strokeStyle = '#0b3d36';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(pkg.x - 8, pkg.y - 8, 16, 16);
+      ctx.fillStyle = '#0b3d36';
+      ctx.font = 'bold 11px system-ui, sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('$', pkg.x, pkg.y + 4);
+    }
   }
 
   // Side-job markers when free.

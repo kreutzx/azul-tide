@@ -17,6 +17,7 @@ export const CAR_TYPES = {
   van: { name: 'Van', length: 74, width: 32, accel: 190, maxSpeed: 270, reverse: 100, grip: 4.6, colors: ['#e9e9e9', '#90a8a0', '#b08968'] },
   truck: { name: 'Truck', length: 92, width: 34, accel: 160, maxSpeed: 240, reverse: 90, grip: 4.2, colors: ['#6c757d', '#8a817c', '#5f6c37'] },
   sports: { name: 'Sports', length: 60, width: 28, accel: 380, maxSpeed: 460, reverse: 140, grip: 6.4, colors: ['#ee6c4d', '#118ab2', '#ffd166', '#8338ec'] },
+  muscle: { name: 'Muscle', length: 66, width: 30, accel: 340, maxSpeed: 420, reverse: 130, grip: 5.6, colors: ['#9d0208', '#370617', '#faa307', '#2a9d8f'] },
 };
 
 const TYPE_KEYS = Object.keys(CAR_TYPES);

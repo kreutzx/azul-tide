@@ -86,6 +86,12 @@ function drawMinimap(ctx, state, w, h) {
       ctx.fillRect(sx(loc.x) - 2, sy(loc.y) - 2, 4, 4);
     }
   }
+  // Hidden packages: small teal dots.
+  for (const pkg of state.data.packages || []) {
+    if (pkg.taken) continue;
+    ctx.fillStyle = '#2de2c4';
+    ctx.fillRect(sx(pkg.x) - 2, sy(pkg.y) - 2, 4, 4);
+  }
   // Mission marker.
   const marker = state.data.missionMarker;
   if (marker) {

@@ -9,6 +9,9 @@
 
 import { H_ROADS, ROAD_W, V_ROADS } from './city.js';
 
+const BARKS_CALM = ['¡Qué calor hoy!', 'The tide smells like money.', 'Heard Sombra lost another truck.', 'Marina Alta tonight?', 'Careful, the police are jumpy.', 'Best empanadas at the market.'];
+const BARKS_FLEE = ['¡Cuidado!', 'He is crazy!', 'My car!', 'Run!', '¡Policía!', 'Not again!'];
+
 const SHIRTS = ['#e07a5f', '#81b29a', '#f2cc8f', '#a8dadc', '#f4f1de', '#ee6c4d', '#118ab2', '#ffd166'];
 const SKINS = ['#f1c27d', '#e0ac69', '#c68642', '#8d5524', '#ffdbac'];
 
@@ -27,6 +30,9 @@ export function makePed(x, y, rng) {
     fleeT: 0,
     walkSpeed: 42 + rng() * 30,
     phase: rng() * Math.PI * 2,
+    bark: null,
+    barkT: 0,
+    barkCooldown: 4 + rng() * 14,
   };
 }
 
@@ -110,8 +116,24 @@ export function updatePedestrian(ped, dt, state) {
       }
     }
   }
+  // Bark lines: shouted when danger hits, muttered when Dario passes close.
+  if (ped.barkT > 0) ped.barkT -= dt;
+  else ped.bark = null;
+  ped.barkCooldown -= dt;
+  if (ped.barkCooldown <= 0 && ped.state !== 'flee') {
+    const pdx = ped.x - state.player.x;
+    const pdy = ped.y - state.player.y;
+    if (pdx * pdx + pdy * pdy < 130 * 130) {
+      ped.bark = BARKS_CALM[Math.floor(rng() * BARKS_CALM.length)];
+      ped.barkT = 2.2;
+    }
+    ped.barkCooldown = 6 + rng() * 16;
+  }
+
   if (danger && ped.state !== 'flee') {
     ped.state = 'flee';
+    ped.bark = BARKS_FLEE[Math.floor(rng() * BARKS_FLEE.length)];
+    ped.barkT = 1.6;
     ped.fleeT = 1.4 + rng() * 0.8;
     const dx = ped.x - danger.x;
     const dy = ped.y - danger.y;
